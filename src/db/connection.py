@@ -32,6 +32,18 @@ async def _release_connection(conn: asyncpg.Connection) -> None:
         await _connection_pool.release(conn)
 
 async def _get_connection_asyncpg() -> asyncpg.Connection:
+    """
+    Gets a connection from the connection pool.
+    
+    If the pool does not exist it will create a new pool
+    and then get a connection from that pool
+
+    Raises:
+        DatabaseError: Raised if the result from Pool.aquire() is not a Connection
+
+    Returns:
+        A connection to the database from the pool
+    """
     global _connection_pool
     if _connection_pool is None:
         _connection_pool = await _create_connection_pool()
@@ -48,6 +60,10 @@ async def _close_connection_pool() -> None:
         _connection_pool = None
 
 class ConnectionManager:
+    """
+    Forces the user to use asyncpg.Connection within a context manager
+    to ensure that the connection gets released when it is no longer being used.
+    """
     def __init__(self):
         self.conn: asyncpg.Connection|None = None
 

@@ -67,6 +67,8 @@ async def seed_table(table_name: str, data_file: str) -> None:
             )
 
 
+# If every trying to create all these tables they must be created
+# in the order these functions are defined because of foreign key constraints.
 async def seed_users() -> None:
     await seed_table("users", "db/data/users.json")
 
