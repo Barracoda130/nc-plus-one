@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.db.setup.connection import get_connection
+from src.db.connection import get_connection
 from src.db.setup.drop_tables import drop_all_tables
 
 @pytest.mark.asyncio

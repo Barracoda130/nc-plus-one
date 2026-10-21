@@ -4,7 +4,7 @@ from copy import deepcopy
 from datetime import datetime
 import pytest
 
-from src.db.setup.connection import get_connection
+from src.db.connection import get_connection
 from src.db.setup.create_tables import create_all_tables
 from src.db.setup.seed import seed_database, seed_users
 from src.db.setup.seed import parse_data

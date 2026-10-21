@@ -1,6 +1,6 @@
 
 
-from src.db.setup.connection import get_connection, _close_connection_pool, _connection_pool, _create_connection_pool
+from src.db.connection import get_connection, _close_connection_pool, _connection_pool, _create_connection_pool
 from src.db.setup.exceptions import DatabaseError
 from asyncpg import InterfaceError
 import pytest
