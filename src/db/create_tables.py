@@ -7,7 +7,7 @@ from src.db.connection import get_connection
 SCHEMA_FILE = "db/schema.sql"
 
 
-async def create_all_tables():
+async def create_all_tables() -> None:
     with open(SCHEMA_FILE, "r") as file:
         schema_sql = file.read()
 

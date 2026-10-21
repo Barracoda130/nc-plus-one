@@ -1,5 +1,7 @@
 
 
+from typing import Any
+
 import asyncpg
 import os
 from dotenv import load_dotenv
@@ -53,12 +55,12 @@ class ConnectionManager:
         self.conn = await _get_connection_asyncpg()
         return self.conn
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
         if self.conn is not None:
             await _release_connection(self.conn)
             self.conn = None
 
-    def __getattr__(self, name: str):
+    def __getattr__(self, name: str) -> Any:
         if name in dir(asyncpg.Connection):
             raise DatabaseError("Connection can only be used within the context manager")
         

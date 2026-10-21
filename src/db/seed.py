@@ -67,20 +67,20 @@ async def seed_table(table_name: str, data_file: str) -> None:
             )
 
 
-async def seed_users():
+async def seed_users() -> None:
     await seed_table("users", "db/data/users.json")
 
-async def seed_venues():
+async def seed_venues() -> None:
     await seed_table("venues", "db/data/venues.json")
     
-async def seed_events():
+async def seed_events() -> None:
     await seed_table("events", "db/data/events.json")
     
-async def seed_rsvps():
+async def seed_rsvps() -> None:
     await seed_table("rsvps", "db/data/rsvps.json")
     
 
-async def seed_database():
+async def seed_database() -> None:
     await drop_all_tables()
     await create_all_tables()
     await seed_users()
