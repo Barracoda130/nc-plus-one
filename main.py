@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--debug-tests", action="store_true", help="Run pytest in debug mode")
     parser.add_argument("--seed", action="store_true", help="Seed the database")
-    parser.add_argument("--run", action="store_true", help="Run the application")
+    parser.add_argument("--run", action="store_true", help="Run the application. This is also the behaviour if no args are passed")
 
     args = parser.parse_args()
 
