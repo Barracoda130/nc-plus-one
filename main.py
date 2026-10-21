@@ -3,7 +3,7 @@ import argparse
 import asyncio
 
 def run_seed_database():
-    from src.db.seed import seed_database
+    from src.db.setup.seed import seed_database
     asyncio.run(seed_database())
     
 def run_debug_pytest():

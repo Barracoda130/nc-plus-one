@@ -5,7 +5,7 @@ from typing import Any
 import asyncpg
 import os
 from dotenv import load_dotenv
-from src.db.exceptions import DatabaseError
+from src.db.setup.exceptions import DatabaseError
 
 load_dotenv(".env")
 

@@ -1,6 +1,6 @@
 
 
-from src.db.connection import get_connection
+from src.db.setup.connection import get_connection
 
 TABLE_NAMES = ["rsvps", "events", "venues", "users"]
 

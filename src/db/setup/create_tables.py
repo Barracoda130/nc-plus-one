@@ -2,7 +2,7 @@
 
 import asyncpg
 
-from src.db.connection import get_connection
+from src.db.setup.connection import get_connection
 
 SCHEMA_FILE = "db/schema.sql"
 

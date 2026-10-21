@@ -2,8 +2,8 @@
 
 import pytest
 
-from src.db.connection import get_connection
-from src.db.drop_tables import drop_all_tables
+from src.db.setup.connection import get_connection
+from src.db.setup.drop_tables import drop_all_tables
 
 @pytest.mark.asyncio
 async def test_drop_all_tables():

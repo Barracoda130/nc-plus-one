@@ -2,9 +2,9 @@
 
 import pytest
 
-from src.db.connection import get_connection
-from src.db.create_tables import create_all_tables
-from src.db.drop_tables import drop_all_tables
+from src.db.setup.connection import get_connection
+from src.db.setup.create_tables import create_all_tables
+from src.db.setup.drop_tables import drop_all_tables
 
 
 
