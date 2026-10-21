@@ -58,6 +58,12 @@ class ConnectionManager:
             await _release_connection(self.conn)
             self.conn = None
 
+    def __getattr__(self, name: str):
+        if name in dir(asyncpg.Connection):
+            raise DatabaseError("Connection can only be used within the context manager")
+        
+        return super().__getattribute__(name)
+
 def get_connection() -> ConnectionManager:
     return ConnectionManager()
 
