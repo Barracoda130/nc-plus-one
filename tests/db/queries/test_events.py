@@ -37,4 +37,17 @@ async def test_get_all_events_empty_database(empty_database):
     assert events == []  # Should return an empty list when the database is empty
     manager.connection.fetch.assert_called_once_with("SELECT * FROM events;")  # Ensure the correct query was executed
 
+@pytest.mark.asyncio
+async def test_get_event_by_id():
+    event = await EventQueries.get_by_id(1)
+    assert event is not None
+    assert isinstance(event, dict)
+    assert "id" in event and event["id"] == 1
+    
+@pytest.mark.asyncio
+async def test_get_event_by_id_not_found():
+    event = await EventQueries.get_by_id(9999)  # Assuming this ID does not exist
+    assert event is None  # Should return None for non-existent ID
+
+
 

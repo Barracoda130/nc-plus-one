@@ -14,3 +14,9 @@ class EventQueries:
             else:
                 rows = await conn.fetch("SELECT * FROM events;")
             return [dict(row) for row in rows]
+
+    @staticmethod
+    async def get_by_id(event_id: int) -> dict|None:
+        async with get_connection() as conn:
+            row = await conn.fetchrow("SELECT * FROM events WHERE id = $1;", event_id)
+            return dict(row) if row else None

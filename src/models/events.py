@@ -14,6 +14,9 @@ class EventResponse(BaseModel):
     organiser_id: int|None
     venue_id: int|None
     created_at: datetime
+
+class SingleEventResponse(BaseModel):
+    event: EventResponse
     
 class EventListResponse(BaseModel):
     events: list[EventResponse]
