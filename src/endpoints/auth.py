@@ -2,6 +2,7 @@
 
 
 import os
+from asyncpg import UniqueViolationError
 import jwt
 import time
 from dotenv import load_dotenv
@@ -11,7 +12,7 @@ from argon2 import PasswordHasher
 
 from src.db.queries.auth import AuthQueries
 from src.exceptions import NCPlusOneHTTPException
-from src.models.auth import LoginResponse
+from src.models.auth import LoginResponse, UserCreateRequest, UserCreatedResponse
 
 load_dotenv(".env")
 
@@ -61,3 +62,23 @@ async def login(request: OAuth2PasswordRequestForm = Depends()):
 
     access_token = create_access_token(user["id"])
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/register", response_model=UserCreatedResponse, status_code=201)
+async def register(request: UserCreateRequest):
+    ph = PasswordHasher()
+    hashed_password = ph.hash(request.password)
+    
+    user_data = {
+        "name": request.name,
+        "email": request.email,
+        "password": hashed_password
+    }
+    
+    try: 
+        user = dict(await AuthQueries.create_user(user_data))
+    except UniqueViolationError:
+        raise NCPlusOneHTTPException(status_code=409, detail="User with this email already exists")
+
+    user.pop("password", None)  # Remove password from the response
+    
+    return {"user": user}
