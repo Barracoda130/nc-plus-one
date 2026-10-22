@@ -9,16 +9,6 @@ from src.db.queries.events import EventQueries
 from src.models.events import EventListResponse, EventResponse
 
 
-@pytest_asyncio.fixture(scope="module", autouse=True)
-async def setup_events_database():
-    """
-    Ensure database has data from which I can gather events.
-    """
-    await seed_database()
-    await _close_connection_pool()
-
-    yield
-    
 @pytest.mark.asyncio
 async def test_get_all_events():
     events = await EventQueries.get_all()

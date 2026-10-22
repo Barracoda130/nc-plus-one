@@ -18,16 +18,10 @@ def pytest_configure():
 async def setup_database():
     
     await seed_database()
-    await _close_connection_pool()  # Close the connection pool after seeding to ensure a clean state for tests
     
     yield  # Run the tests
     
     await drop_all_tables()
-    await _close_connection_pool()
-
-@pytest_asyncio.fixture(autouse=True)
-async def close_connection_pool_after_tests():
-    yield
     await _close_connection_pool()
 
     
