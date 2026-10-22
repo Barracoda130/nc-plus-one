@@ -1,0 +1,20 @@
+
+
+from datetime import datetime
+
+from pydantic import BaseModel
+
+
+class EventResponse(BaseModel):
+    id: int
+    title: str
+    description: str|None
+    starts_at: datetime
+    ends_at: datetime|None
+    organiser_id: int|None
+    venue_id: int|None
+    created_at: datetime
+    
+class EventListResponse(BaseModel):
+    events: list[EventResponse]
+    
