@@ -50,14 +50,11 @@ def test_parse_data_does_not_change_non_password_non_date_fields():
 
 @pytest.mark.asyncio
 async def test_seed_database_creates_tables_and_seeds_users():
-    print("0")
     await seed_database()
     
-    print("1")
     async with get_connection() as conn:
         tables = await conn.fetch("SELECT table_name FROM information_schema.tables WHERE table_schema='public';")
 
-    print("2")
     tables = [table[0] for table in tables]
 
     assert "users" in tables

@@ -1,6 +1,7 @@
 
 
 import os
+from unittest.mock import AsyncMock, MagicMock
 import pytest_asyncio
 import pytest
 from src.db.connection import _close_connection_pool
@@ -28,3 +29,32 @@ async def setup_database():
 async def close_connection_pool_after_tests():
     yield
     await _close_connection_pool()
+
+    
+class EmptyDatabaseConnectionManager:
+    """
+    A fake connection manager used to simulate an empty database.
+    """
+
+    def __init__(self):
+        self.connection = MagicMock()
+        self.connection.fetch = AsyncMock(return_value=[])  
+        self.connection.fetchrow = AsyncMock(return_value=None)
+        self.connection.execute = AsyncMock(return_value=None)
+        
+    async def __aenter__(self):
+        return self.connection
+    
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        pass
+    
+@pytest.fixture
+def empty_database(monkeypatch: pytest.MonkeyPatch):
+    """
+    Fixture to simulate an empty database by monkeypatching the get_connection function.
+    """
+    def patch_lookup_location(lookup_location: str) -> EmptyDatabaseConnectionManager:
+        manager = EmptyDatabaseConnectionManager()
+        monkeypatch.setattr(lookup_location, lambda: manager)
+        return manager
+    yield patch_lookup_location
