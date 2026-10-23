@@ -56,6 +56,8 @@ async def test_register_existing_user(async_client, test_user):
             "password": test_user["password"]
         }
         response = await client.post("/api/auth/register", json=body)
+    
+    print(f"Response status code: {response.status_code}, Response body: {response.json()}")  # Debugging line
 
     assert response.status_code == 409
     assert response.json()["detail"]["error"]["message"]== "User with this email already exists"
