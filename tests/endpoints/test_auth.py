@@ -51,6 +51,7 @@ async def test_register_user(async_client, test_user):
     assert response_shape(response.json(), UserCreatedResponse)
     assert user_data["name"] == "name"
     assert user_data["email"] == test_user["username"]
+    assert "password" not in user_data  # Ensure password is not returned
     
 @pytest.mark.asyncio
 async def test_register_existing_user(async_client, test_user):

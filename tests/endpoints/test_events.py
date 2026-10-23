@@ -72,7 +72,7 @@ async def test_rsvp_to_event(async_client, test_event, test_user):
     data = response.json()
     assert response_shape(data, SingleRSVPResponse)
 
-    body = data["event"]
+    body = data["rsvp"]
     assert body["attendee_id"] == test_user["id"]
     assert body["event_id"] == test_event["id"]
     

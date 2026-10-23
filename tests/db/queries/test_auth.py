@@ -50,3 +50,6 @@ async def create_user_successful(test_user):
     assert user["email"] == new_user_data["email"]
     assert "created_at" in user
     assert "id" in user
+
+    # Test the password is hashed
+    assert user["password"] != new_user_data["password"]

@@ -2,6 +2,7 @@
 
 
 import os
+import argon2
 from asyncpg import UniqueViolationError
 import jwt
 import time
@@ -63,7 +64,7 @@ async def login(request: OAuth2PasswordRequestForm = Depends()):
     
     try:
         ph.verify(user["password"], request.password)
-    except Exception:
+    except argon2.exceptions.Argon2Error:
         raise login_exception
 
     access_token = create_access_token(user["id"])
