@@ -3,6 +3,7 @@
 import pytest
 
 from src.db.queries.auth import AuthQueries
+from tests.conftest import error_message_contains, is_error_response
 
 
 @pytest.mark.asyncio
@@ -28,6 +29,7 @@ async def test_login_invalid_user(async_client):
         response = await client.post("/api/auth/login", data=body)
         
     assert response.status_code == 401
+    assert is_error_response(response.json())
     
 @pytest.mark.asyncio
 async def test_register_user(async_client, test_user):
@@ -60,4 +62,5 @@ async def test_register_existing_user(async_client, test_user):
     print(f"Response status code: {response.status_code}, Response body: {response.json()}")  # Debugging line
 
     assert response.status_code == 409
-    assert response.json()["detail"]["error"]["message"]== "User with this email already exists"
+    assert is_error_response(response.json())
+    assert error_message_contains(response.json(), "User with this email already exists")

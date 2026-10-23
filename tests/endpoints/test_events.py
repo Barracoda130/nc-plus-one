@@ -83,6 +83,7 @@ async def test_rsvp_to_event_unauthorized(async_client, test_event):
         
     assert response.status_code == 401
     assert is_error_response(response.json())
+    assert error_message_contains(response.json(), "Not authenticated")
 
 @pytest.mark.asyncio
 async def test_rsvp_to_event_not_found(async_client, test_user):
@@ -94,6 +95,7 @@ async def test_rsvp_to_event_not_found(async_client, test_user):
         
     assert response.status_code == 404
     assert is_error_response(response.json())
+    assert error_message_contains(response.json(), "Event not found")
     
 @pytest.mark.asyncio
 async def test_rsvp_to_event_already_exists(async_client, test_event, test_user):
