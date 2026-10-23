@@ -4,7 +4,7 @@ from asyncpg import Record
 
 from src.db.connection import get_connection
 from src.db.queries.base_query import BaseQuery
-from src.db.exceptions import DatabaseError
+from src.db.exceptions import CreationFailedError
 
 class AuthQueries(BaseQuery):
     @staticmethod
@@ -26,7 +26,7 @@ class AuthQueries(BaseQuery):
             )
             
         if not user:
-            raise DatabaseError("Failed to create user")
+            raise CreationFailedError("Failed to create user")
         
         return user
 

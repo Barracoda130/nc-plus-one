@@ -1,5 +1,6 @@
 
 
+import asyncpg
 from fastapi import APIRouter, Depends
 
 from src.db.queries.events import EventQueries
@@ -37,13 +38,23 @@ async def rsvp_to_event(event_id: int, user_id: int = Depends(get_current_user_i
     if not event:
         raise NCPlusOneHTTPException(status_code=404, detail="Event not found")
 
-    try:
-        rsvp = await RSVPQueries.create_rsvp(event_id, user_id)
-    except DatabaseError as e:
-        raise NCPlusOneHTTPException(status_code=409, detail=str(e))
+    rsvp = await RSVPQueries.create_rsvp(event_id, user_id)
 
     response = {
         "rsvp": dict(rsvp)
     }
     
     return response
+
+@router.delete("/{event_id}/rsvp/me", status_code=204, response_model=None)
+async def delete_rsvp(event_id: int, user_id: int = Depends(get_current_user_id)):
+    event = await EventQueries.get_by_id(event_id)
+    
+    if not event:
+        raise NCPlusOneHTTPException(status_code=404, detail="Event not found")
+
+    rsvp = await RSVPQueries.get_rsvp(event_id, user_id)
+    if not rsvp:
+        raise NCPlusOneHTTPException(status_code=404, detail="RSVP not found")
+
+    await RSVPQueries.delete_rsvp(event_id, user_id)

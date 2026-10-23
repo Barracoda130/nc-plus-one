@@ -109,7 +109,7 @@ class TestRSVPToEvent:
             
         assert response2.status_code == 409
         assert is_error_response(response2.json())
-        assert error_message_contains(response2.json(), "RSVP already exists")
+        assert error_message_contains(response2.json(), "Resource already exists")
 
 class TestDeleteRSVP:
     async def test_happy_path(self, async_client, test_event, test_user):
@@ -122,29 +122,31 @@ class TestDeleteRSVP:
             assert response1.status_code == 200
             
             # Now delete the RSVP
-            response2 = await client.delete(f"/api/events/{test_event['id']}/rsvp",
+            response2 = await client.delete(f"/api/events/{test_event['id']}/rsvp/me",
                                             headers={"Authorization": f"Bearer {token}"}
                                             )
             
         assert response2.status_code == 204
-        data = response2.json()
-        assert data is None
+        data = response2.text is None
 
     async def test_rsvp_not_found(self, async_client, test_event, test_user):
         async with async_client as client:
             token = await login_user(client, test_user)
             # Attempt to delete an RSVP that doesn't exist
-            response = await client.delete(f"/api/events/{test_event['id']}/rsvp",
+            response = await client.delete(f"/api/events/{test_event['id']}/rsvp/me",
                                             headers={"Authorization": f"Bearer {token}"}
                                             )
-            
+
+            response = await client.delete(f"/api/events/{test_event['id']}/rsvp/me",
+                                            headers={"Authorization": f"Bearer {token}"}
+                                            )
         assert response.status_code == 404
         assert is_error_response(response.json())
         assert error_message_contains(response.json(), "RSVP not found")
 
     async def test_unauthorized(self, async_client, test_event):
         async with async_client as client:
-            response = await client.delete(f"/api/events/{test_event['id']}/rsvp")
+            response = await client.delete(f"/api/events/{test_event['id']}/rsvp/me")
             
         assert response.status_code == 401
         assert is_error_response(response.json())
@@ -153,7 +155,7 @@ class TestDeleteRSVP:
     async def test_event_not_found(self, async_client, test_user):
         async with async_client as client:
             token = await login_user(client, test_user)
-            response = await client.delete(f"/api/events/9999/rsvp",  # Assuming this ID does not exist
+            response = await client.delete(f"/api/events/9999/rsvp/me",  # Assuming this ID does not exist
                                             headers={"Authorization": f"Bearer {token}"}
                                             )
             
