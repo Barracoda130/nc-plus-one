@@ -6,7 +6,7 @@ from src.db.queries.events import EventQueries
 from src.db.queries.rsvps import RSVPQueries
 from src.endpoints.auth import get_current_user_id
 from src.exceptions import NCPlusOneHTTPException
-from src.db.setup.exceptions import DatabaseError
+from src.db.exceptions import DatabaseError
 from src.models.events import EventListResponse, EventResponse, SingleEventResponse
 from src.models.rsvps import SingleRSVPResponse
 

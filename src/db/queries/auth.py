@@ -4,7 +4,7 @@ from asyncpg import Record
 
 from src.db.connection import get_connection
 from src.db.queries.base_query import BaseQuery
-from src.db.setup.exceptions import DatabaseError
+from src.db.exceptions import DatabaseError
 
 class AuthQueries(BaseQuery):
     @staticmethod

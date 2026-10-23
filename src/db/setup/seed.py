@@ -7,7 +7,7 @@ from argon2 import PasswordHasher
 from src.db.connection import get_connection
 from src.db.setup.create_tables import create_all_tables
 from src.db.setup.drop_tables import drop_all_tables
-from src.db.setup.exceptions import DatabaseError
+from src.db.exceptions import DatabaseError
 
 
 def parse_data(data: list[dict]) -> list[dict]:
