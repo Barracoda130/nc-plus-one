@@ -11,3 +11,17 @@ psql -f db/setup.sql
 ```shell
 python main.py --seed
 ```
+
+# Run
+## Running the main app
+To run the application run the following command:
+```shell
+python main.py
+```
+
+## Running the tests
+To run the tests type run the following command from within the root directory
+```shell
+pytest
+```
+If there is an issue with the tests and you wish to use the VSCode debugger, you can execute the main.py file with the command line arg `--debug-tests`.

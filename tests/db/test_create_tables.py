@@ -29,11 +29,8 @@ async def test_create_all_tables():
     
 @pytest.mark.asyncio
 async def test_create_all_tables_already_exist():
-    print("1")
     await create_all_tables()  # Create tables for the first time
-    print("2")
     await create_all_tables()  # Attempt to create tables again
-    print("3")
     
     async with get_connection() as conn:
         tables = await conn.fetch("SELECT table_name FROM information_schema.tables WHERE table_schema='public';")

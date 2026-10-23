@@ -8,7 +8,7 @@ def run_seed_database():
     
 def run_debug_pytest():
     import pytest
-    pytest.main(["-s", "tests/db/test_create_tables.py", "--disable-warnings"])
+    pytest.main(["-s", "--disable-warnings"])
 
 def run_app():
     from src.app import run
@@ -20,7 +20,7 @@ if __name__ == "__main__":
         description="A command-line tool to manage the NC Plus One database.",
     )
 
-    parser.add_argument("--debug-tests", action="store_true", help="Run pytest in debug mode")
+    parser.add_argument("--debug-tests", action="store_true", help="Run pytest - can be used with vscode debugger")
     parser.add_argument("--seed", action="store_true", help="Seed the database")
     parser.add_argument("--run", action="store_true", help="Run the application. This is also the behaviour if no args are passed")
 
