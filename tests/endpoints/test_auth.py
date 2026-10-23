@@ -8,63 +8,65 @@ from tests.conftest import error_message_contains, is_error_response
 from tests.endpoints.conftest import response_shape
 
 
-@pytest.mark.asyncio
-async def test_login_valid_user(async_client, test_user):
-    async with async_client as client:
-        body = {
-            "username": test_user["username"],
-            "password": test_user["password"]
-        }
-        response = await client.post("/api/auth/login", data=body)
+class TestLogin:
+    @pytest.mark.asyncio
+    async def valid_user(self, async_client, test_user):
+        async with async_client as client:
+            body = {
+                "username": test_user["username"],
+                "password": test_user["password"]
+            }
+            response = await client.post("/api/auth/login", data=body)
+            
+        assert response.status_code == 200
+        assert response_shape(response.json(), LoginResponse)
+        assert response.json()["token_type"] == "bearer"
+
+    @pytest.mark.asyncio
+    async def invalid_user(self, async_client):
+        async with async_client as client:
+            body = {
+                "username": "invaliduser",
+                "password": "invalidpassword"
+            }
+            response = await client.post("/api/auth/login", data=body)
+            
+        assert response.status_code == 401
+        assert is_error_response(response.json())
+    
+class TestRegister:
+    @pytest.mark.asyncio
+    async def happy_path(self, async_client, test_user):
+        await AuthQueries.delete_user_by_id(test_user["id"])  # Ensure the user does not exist before registering
         
-    assert response.status_code == 200
-    assert response_shape(response.json(), LoginResponse)
-    assert response.json()["token_type"] == "bearer"
+        async with async_client as client:
+            body = {
+                "name": "name",
+                "email": test_user["username"],
+                "password": test_user["password"]
+            }
+            response = await client.post("/api/auth/register", json=body)
 
-@pytest.mark.asyncio
-async def test_login_invalid_user(async_client):
-    async with async_client as client:
-        body = {
-            "username": "invaliduser",
-            "password": "invalidpassword"
-        }
-        response = await client.post("/api/auth/login", data=body)
+        assert response.status_code == 201
+        user_data = response.json()["user"]
         
-    assert response.status_code == 401
-    assert is_error_response(response.json())
-    
-@pytest.mark.asyncio
-async def test_register_user(async_client, test_user):
-    await AuthQueries.delete_user_by_id(test_user["id"])  # Ensure the user does not exist before registering
-    
-    async with async_client as client:
-        body = {
-            "name": "name",
-            "email": test_user["username"],
-            "password": test_user["password"]
-        }
-        response = await client.post("/api/auth/register", json=body)
+        assert response_shape(response.json(), UserCreatedResponse)
+        assert user_data["name"] == "name"
+        assert user_data["email"] == test_user["username"]
+        assert "password" not in user_data  # Ensure password is not returned
+        
+    @pytest.mark.asyncio
+    async def existing_user(self, async_client, test_user):
+        async with async_client as client:
+            body = {
+                "name": "name",
+                "email": test_user["username"],
+                "password": test_user["password"]
+            }
+            response = await client.post("/api/auth/register", json=body)
+        
+        print(f"Response status code: {response.status_code}, Response body: {response.json()}")  # Debugging line
 
-    assert response.status_code == 201
-    user_data = response.json()["user"]
-    
-    assert response_shape(response.json(), UserCreatedResponse)
-    assert user_data["name"] == "name"
-    assert user_data["email"] == test_user["username"]
-    assert "password" not in user_data  # Ensure password is not returned
-    
-@pytest.mark.asyncio
-async def test_register_existing_user(async_client, test_user):
-    async with async_client as client:
-        body = {
-            "name": "name",
-            "email": test_user["username"],
-            "password": test_user["password"]
-        }
-        response = await client.post("/api/auth/register", json=body)
-    
-    print(f"Response status code: {response.status_code}, Response body: {response.json()}")  # Debugging line
-
-    assert response.status_code == 409
-    assert is_error_response(response.json())
-    assert error_message_contains(response.json(), "User with this email already exists")
+        assert response.status_code == 409
+        assert is_error_response(response.json())
+        assert error_message_contains(response.json(), "User with this email already exists")
