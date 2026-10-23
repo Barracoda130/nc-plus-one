@@ -9,8 +9,7 @@ from tests.endpoints.conftest import response_shape
 
 
 class TestLogin:
-    @pytest.mark.asyncio
-    async def valid_user(self, async_client, test_user):
+    async def test_valid_user(self, async_client, test_user):
         async with async_client as client:
             body = {
                 "username": test_user["username"],
@@ -22,8 +21,7 @@ class TestLogin:
         assert response_shape(response.json(), LoginResponse)
         assert response.json()["token_type"] == "bearer"
 
-    @pytest.mark.asyncio
-    async def invalid_user(self, async_client):
+    async def test_invalid_user(self, async_client):
         async with async_client as client:
             body = {
                 "username": "invaliduser",
@@ -35,8 +33,7 @@ class TestLogin:
         assert is_error_response(response.json())
     
 class TestRegister:
-    @pytest.mark.asyncio
-    async def happy_path(self, async_client, test_user):
+    async def test_happy_path(self, async_client, test_user):
         await AuthQueries.delete_user_by_id(test_user["id"])  # Ensure the user does not exist before registering
         
         async with async_client as client:
@@ -55,8 +52,7 @@ class TestRegister:
         assert user_data["email"] == test_user["username"]
         assert "password" not in user_data  # Ensure password is not returned
         
-    @pytest.mark.asyncio
-    async def existing_user(self, async_client, test_user):
+    async def test_existing_user(self, async_client, test_user):
         async with async_client as client:
             body = {
                 "name": "name",
