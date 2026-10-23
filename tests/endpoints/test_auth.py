@@ -3,7 +3,9 @@
 import pytest
 
 from src.db.queries.auth import AuthQueries
+from src.models.auth import LoginResponse, UserCreatedResponse
 from tests.conftest import error_message_contains, is_error_response
+from tests.endpoints.conftest import response_shape
 
 
 @pytest.mark.asyncio
@@ -16,7 +18,7 @@ async def test_login_valid_user(async_client, test_user):
         response = await client.post("/api/auth/login", data=body)
         
     assert response.status_code == 200
-    assert "access_token" in response.json()
+    assert response_shape(response.json(), LoginResponse)
     assert response.json()["token_type"] == "bearer"
 
 @pytest.mark.asyncio
@@ -45,7 +47,8 @@ async def test_register_user(async_client, test_user):
 
     assert response.status_code == 201
     user_data = response.json()["user"]
-    assert "id" in user_data
+    
+    assert response_shape(response.json(), UserCreatedResponse)
     assert user_data["name"] == "name"
     assert user_data["email"] == test_user["username"]
     

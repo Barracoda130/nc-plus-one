@@ -4,7 +4,10 @@ from datetime import datetime
 
 from src.db.queries.events import EventQueries
 from src.db.connection import _close_connection_pool
+from src.models.events import EventListResponse, SingleEventResponse
+from src.models.rsvps import SingleRSVPResponse
 from tests.conftest import error_message_contains, is_error_response, login_user
+from tests.endpoints.conftest import response_shape
 
 @pytest.mark.asyncio
 async def test_get_all_events(async_client):
@@ -13,8 +16,7 @@ async def test_get_all_events(async_client):
         
     assert response.status_code == 200
     data = response.json()
-    assert "events" in data
-    assert isinstance(data["events"], list)
+    assert response_shape(data, EventListResponse)
     
     events_from_db = await EventQueries.get_all(order_by="id")
     for event in events_from_db:
@@ -31,8 +33,7 @@ async def test_get_event_by_id(async_client):
         
     assert response.status_code == 200
     data = response.json()
-    assert "event" in data
-    assert isinstance(data["event"], dict)
+    assert response_shape(data, SingleEventResponse)
     
     event_from_db = await EventQueries.get_by_id(1)
     assert event_from_db is not None
@@ -69,12 +70,11 @@ async def test_rsvp_to_event(async_client, test_event, test_user):
         
     assert response.status_code == 200
     data = response.json()
-    assert "rsvp" in data
-    body = data["rsvp"]
+    assert response_shape(data, SingleRSVPResponse)
+
+    body = data["event"]
     assert body["attendee_id"] == test_user["id"]
     assert body["event_id"] == test_event["id"]
-    assert "id" in body
-    assert "created_at" in body
     
 @pytest.mark.asyncio
 async def test_rsvp_to_event_unauthorized(async_client, test_event):
