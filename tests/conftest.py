@@ -1,5 +1,6 @@
 
 
+from datetime import datetime
 import os
 from unittest.mock import AsyncMock, MagicMock
 from argon2 import PasswordHasher
@@ -79,4 +80,58 @@ async def test_user():
         
     assert user_id
     user["id"] = user_id
-    return user
+    yield user
+    
+    # Clean up the test user
+    async with get_connection() as conn:
+        await conn.execute("DELETE FROM users WHERE id = $1", user_id)
+
+async def login_user(client, user):
+    response = await client.post("/api/auth/login", 
+                           data={"username": user["username"], 
+                                 "password": user["password"]})
+    assert response.status_code == 200
+    token = response.json()["access_token"]
+    assert token is not None
+    return token
+
+@pytest.fixture
+async def test_event():
+    event = {
+        "title": "Test Event",
+        "description": "This is a test event.",
+        "starts_at": datetime.fromisoformat("2024-01-01T10:00:00Z"),
+        "ends_at": datetime.fromisoformat("2024-01-01T12:00:00Z")
+    }
+
+    async with get_connection() as conn:
+        event_id = await conn.fetchval(
+            "INSERT INTO events (title, description, starts_at, ends_at) VALUES ($1, $2, $3, $4) RETURNING id",
+            event["title"], event["description"], event["starts_at"], event["ends_at"]
+        )
+
+    assert event_id
+    event["id"] = event_id
+    yield event
+    
+    # Clean up the test event
+    async with get_connection() as conn:
+        await conn.execute("DELETE FROM events WHERE id = $1", event_id)
+
+def error_message_contains(response: dict|None, expected_message: str) -> bool:
+    if not response:
+        return False
+    
+    message = response["detail"]["error"]["message"]
+    if not message:
+        return False
+    
+    return expected_message in str(message)
+
+def is_error_response(response: dict|None) -> bool:
+    if not response:
+        return False
+    
+    return ("error" in response["detail"] and
+            "message" in response["detail"]["error"] and
+            "code" in response["detail"]["error"])

@@ -1,10 +1,14 @@
 
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from src.db.queries.events import EventQueries
+from src.db.queries.rsvps import RSVPQueries
+from src.endpoints.auth import get_current_user_id
 from src.exceptions import NCPlusOneHTTPException
+from src.db.setup.exceptions import DatabaseError
 from src.models.events import EventListResponse, EventResponse, SingleEventResponse
+from src.models.rsvps import SingleRSVPResponse
 
 router = APIRouter(prefix="/events", tags=["Events"])
 
@@ -24,4 +28,22 @@ async def get_event_by_id(event_id: int):
     response = {
         "event": event
     }
+    return response
+
+@router.post("/{event_id}/rsvp", response_model=SingleRSVPResponse)
+async def rsvp_to_event(event_id: int, user_id: int = Depends(get_current_user_id)):
+    event = await EventQueries.get_by_id(event_id)
+    
+    if not event:
+        raise NCPlusOneHTTPException(status_code=404, detail="Event not found")
+
+    try:
+        rsvp = await RSVPQueries.create_rsvp(event_id, user_id)
+    except DatabaseError as e:
+        raise NCPlusOneHTTPException(status_code=409, detail=str(e))
+
+    response = {
+        "rsvp": dict(rsvp)
+    }
+    
     return response

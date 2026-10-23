@@ -4,6 +4,7 @@ from datetime import datetime
 
 from src.db.queries.events import EventQueries
 from src.db.connection import _close_connection_pool
+from tests.conftest import error_message_contains, is_error_response, login_user
 
 @pytest.mark.asyncio
 async def test_get_all_events(async_client):
@@ -55,4 +56,59 @@ async def test_get_event_by_id_invalid_id(async_client):
         response = await client.get("/api/events/invalid")  # Invalid ID
         
     assert response.status_code == 422
-    assert "error" in response.json()["detail"]
+    assert is_error_response(response.json())
+
+@pytest.mark.asyncio
+async def test_rsvp_to_event(async_client, test_event, test_user):
+    async with async_client as client:
+        token = await login_user(client, test_user)
+        print(f"Token: {token}")  # Debugging line to print the token
+        response = await client.post(f"/api/events/{test_event['id']}/rsvp",
+                                     headers={"Authorization": f"Bearer {token}"}
+                                     )
+        
+    assert response.status_code == 200
+    data = response.json()
+    assert "rsvp" in data
+    body = data["rsvp"]
+    assert body["attendee_id"] == test_user["id"]
+    assert body["event_id"] == test_event["id"]
+    assert "id" in body
+    assert "created_at" in body
+    
+@pytest.mark.asyncio
+async def test_rsvp_to_event_unauthorized(async_client, test_event):
+    async with async_client as client:
+        response = await client.post(f"/api/events/{test_event['id']}/rsvp")
+        
+    assert response.status_code == 401
+    assert is_error_response(response.json())
+
+@pytest.mark.asyncio
+async def test_rsvp_to_event_not_found(async_client, test_user):
+    async with async_client as client:
+        token = await login_user(client, test_user)
+        response = await client.post(f"/api/events/9999/rsvp",  # Assuming this ID does not exist
+                                     headers={"Authorization": f"Bearer {token}"}
+                                     )
+        
+    assert response.status_code == 404
+    assert is_error_response(response.json())
+    
+@pytest.mark.asyncio
+async def test_rsvp_to_event_already_exists(async_client, test_event, test_user):
+    async with async_client as client:
+        token = await login_user(client, test_user)
+        # First RSVP attempt
+        response1 = await client.post(f"/api/events/{test_event['id']}/rsvp",
+                                      headers={"Authorization": f"Bearer {token}"}
+                                      )
+        assert response1.status_code == 200
+        
+        # Second RSVP attempt (should fail)
+        response2 = await client.post(f"/api/events/{test_event['id']}/rsvp",
+                                      headers={"Authorization": f"Bearer {token}"}
+                                      )
+        
+    assert response2.status_code == 409
+    assert error_message_contains(response2.json(), "RSVP already exists")

@@ -25,7 +25,7 @@ JWT_ALGORITHM = "HS256"
 def create_access_token(user_id: int) -> str:
     timeout = 1800 # Token expires in 30 minutes
     payload = {
-        "sub": user_id,
+        "sub": str(user_id),
         "exp": time.time() + timeout
     }
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
@@ -34,8 +34,14 @@ def get_current_user_id(token: str = Depends(oauth2_scheme)) -> int:
     invalid_token_exception = NCPlusOneHTTPException(status_code=401, detail="Invalid token")
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id = payload.get("sub")
-        if not user_id:
+        user_id_str = payload.get("sub")
+        
+        if not user_id_str:
+            raise invalid_token_exception
+
+        try:
+            user_id = int(user_id_str)
+        except (ValueError, TypeError):
             raise invalid_token_exception
 
         return user_id
