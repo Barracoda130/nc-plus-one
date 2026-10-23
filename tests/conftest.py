@@ -2,9 +2,11 @@
 
 import os
 from unittest.mock import AsyncMock, MagicMock
+from argon2 import PasswordHasher
+from asyncpg import UniqueViolationError
 import pytest_asyncio
 import pytest
-from src.db.connection import _close_connection_pool
+from src.db.connection import _close_connection_pool, get_connection
 from src.db.setup.drop_tables import drop_all_tables
 from src.db.setup.seed import seed_database
 
@@ -52,3 +54,29 @@ def empty_database(monkeypatch: pytest.MonkeyPatch):
         monkeypatch.setattr(lookup_location, lambda: manager)
         return manager
     yield patch_lookup_location
+
+    
+@pytest.fixture
+async def test_user():
+    user = {
+        "username": "testuser",
+        "password": "testpassword"
+    }
+    ph = PasswordHasher()
+    hashed_password = ph.hash(user["password"])
+    async with get_connection() as conn:
+        try:
+            await conn.execute(
+                "INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id",
+                user["username"], 
+                hashed_password,
+                "test name"
+            )
+        except UniqueViolationError:
+            pass  # User already exists, ignore the error
+
+        user_id = await conn.fetchval("SELECT id FROM users WHERE email = $1", "testuser",)
+        
+    assert user_id
+    user["id"] = user_id
+    return user

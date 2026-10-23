@@ -5,12 +5,14 @@ from fastapi.exceptions import RequestValidationError
 import uvicorn
 
 from src.endpoints.events import router as events_router
+from src.endpoints.auth import router as auth_router
 from src.exceptions import NCPlusOneHTTPException
 
 app = FastAPI(title="NC+1 API")
 
 default_router = APIRouter(prefix="/api") 
 default_router.include_router(events_router)
+default_router.include_router(auth_router)
 
 app.include_router(default_router)
 
