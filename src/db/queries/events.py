@@ -1,11 +1,9 @@
 
 
 from src.db.connection import get_connection
+from src.db.queries.base_query import BaseQuery
 
-class EventQueries:
-    def __new__(cls):
-        raise NotImplementedError("This class should not be instantiated")
-
+class EventQueries(BaseQuery):
     @staticmethod
     async def get_all(order_by: str|None = None) -> list[dict]:
         async with get_connection() as conn:
