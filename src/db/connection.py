@@ -17,12 +17,13 @@ async def _create_connection_pool() -> asyncpg.pool.Pool:
     database_name = os.environ.get("DATABASE_NAME")
     database_user = os.environ.get("DATABASE_USER")
     database_password = os.environ.get("DATABASE_PASSWORD")
+    database_host = os.environ.get("DATABASE_HOST")
     
     pool = await asyncpg.create_pool(
         user=database_user,
         password=database_password,
         database=database_name,
-        host="localhost"
+        host=database_host
     )
     if not pool:
         raise DatabaseError("Failed to create connection pool")
