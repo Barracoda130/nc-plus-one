@@ -47,6 +47,16 @@ resource "aws_security_group" "database_access" {
   }
 }
 
+resource "aws_security_group" "allow_http_from_lb" {
+  name        = "allow_http_from_lb"
+  description = "Allow HTTP from Load Balancer"
+  vpc_id      = module.vpc.vpc_id
+
+  tags = {
+    Name = "allow-http-from-lb"
+  }
+}
+
 resource "aws_vpc_security_group_ingress_rule" "allow_rds_inbound" {
   security_group_id            = aws_security_group.rds.id
   referenced_security_group_id = aws_security_group.database_access.id
@@ -79,5 +89,12 @@ resource "aws_vpc_security_group_ingress_rule" "allow_http_inbound" {
   to_port           = 80
 }
 
+resource "aws_vpc_security_group_egress_rule" "allow_http_from_lb" {
+  security_group_id = aws_security_group.allow_http_from_lb.id
+  cidr_ipv4         = module.vpc.cidr_block
+  ip_protocol       = "tcp"
+  from_port         = 80
+  to_port           = 80
+}
 
 
