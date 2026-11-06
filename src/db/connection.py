@@ -88,39 +88,6 @@ def get_connection() -> ConnectionManager:
     return ConnectionManager()
 
 
-# UNUSED BUT FOR DEMO
-class PsycopgConnection:
-    def __init__(self, conn):
-        self.conn = conn
-        
-    def fetch(self, query: str): ...
-    
-    def fetchrow(self, query: str): ...
-
-class PsycopgConnectionManager:
-    def __init__(self):
-        self.conn: Any|None = None
-
-    async def __aenter__(self) -> Any:
-        self.conn = psycopg.AsyncConnection.connect(
-            host="localhost",
-            dbname=os.environ.get("DATABASE_NAME"),
-            user=os.environ.get("DATABASE_USER"),
-            password=os.environ.get("DATABASE_PASSWORD")
-        )
-        return PsycopgConnection(self.conn)
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        if self.conn is not None:
-            await _release_connection(self.conn)
-            self.conn = None
-
-    def __getattr__(self, name: str) -> Any:
-        if name in dir(asyncpg.Connection):
-            raise DatabaseError("Connection can only be used within the context manager")
-        
-        return super().__getattribute__(name)
-
     
 
 
