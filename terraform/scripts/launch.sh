@@ -49,7 +49,7 @@ db_credentials="$(aws secretsmanager get-secret-value \
   --secret-id nc-plus-one/db-credentials \
   --query SecretString \
   --output text)"
-PGPASSWORD="$(echo "$db_credentials" | jq -r '."DB_PASSWORD"')"
+export PGPASSWORD="$(echo "$db_credentials" | jq -r '."DB_PASSWORD"')"
 
 DB_NAME="$(echo "$db_credentials" | jq -r '."DB_NAME"')"
 
@@ -62,7 +62,7 @@ JWT_SECRET="$(aws secretsmanager get-secret-value \
   --output text | jq -r '."JWT_SECRET"')"
 
 export RDSHOST=${DB_HOST}
-if [ "$(psql "host=$RDSHOST port=5432 dbname=mydb user=postgres" \
+if [ "$(psql "host=$RDSHOST port=5432 dbname=$DB_NAME user=$DB_USERNAME" \
   -tAc "SELECT NOT EXISTS (
     SELECT 1
     FROM information_schema.tables
@@ -81,11 +81,11 @@ echo "Creating the application environment file"
 echo "
 
 LOG_LEVEL=debug
-DB_PASSWORD=${PGPASSWORD}
-DATABASE_NAME=${DB_NAME}
-DATABASE_USER=${DB_USERNAME}
-DATABASE_PASSWORD=${PGPASSWORD}
-JWT_SECRET=${JWT_SECRET}
+DATABASE_HOST=$RDSHOST
+DATABASE_NAME=$DB_NAME
+DATABASE_USER=$DB_USERNAME
+DATABASE_PASSWORD=$PGPASSWORD
+JWT_SECRET=$JWT_SECRET
 " > .env
 
 echo "Installing application requirements"
