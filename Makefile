@@ -57,7 +57,7 @@ setup-test-db:
 
 # Seed database
 seed-db:
-	$(call execute_in_env, $(PYTHON_INTERPRETER) main.py --seed-db)
+	$(call execute_in_env, $(PYTHON_INTERPRETER) main.py --seed)
 
 ## Set up dev requirements (bandit, black & coverage)
 dev-setup: bandit black coverage
