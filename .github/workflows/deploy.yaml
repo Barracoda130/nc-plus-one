@@ -65,6 +65,8 @@ jobs:
         run: terraform -chdir=terraform init
 
       - name: Terraform apply
+        env:
+          TF_VAR_app_commit_sha: ${{ github.sha }}
         run: terraform -chdir=terraform apply -auto-approve 
 
       
