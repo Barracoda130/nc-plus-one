@@ -11,7 +11,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATABASE_NAME: nc_plus_one_test
       DATABASE_USER: postgres
     steps:
       - name: Clone repository

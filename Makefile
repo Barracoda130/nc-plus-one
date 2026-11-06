@@ -53,7 +53,7 @@ coverage:
 
 # Setup test database
 create-test-db:
-	sudo -u postgres createdb test_db
+	sudo -u postgres createdb nc_plus_one_test
 
 # Seed database
 seed-db:
