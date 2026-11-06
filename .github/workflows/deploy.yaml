@@ -21,6 +21,12 @@ jobs:
       - name: Install postgres
         run: sudo apt update && sudo apt-get install postgresql -y
 
+      - name: Start postgres
+        run: |
+          sudo systemctl start postgresql
+          sudo systemctl status postgresql --no-pager
+          pg_isready
+
       - name: Install dependencies
         run: make requirements
 
