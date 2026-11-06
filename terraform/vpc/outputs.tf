@@ -17,3 +17,7 @@ output "vpc_id" {
 output "database_subnet_group" {
   value = length(var.database_subnet_cidrs) > 0 ? aws_db_subnet_group.main_db_subnet_group[0] : null
 }
+
+output "cidr_block" {
+  value = aws_vpc.vpc.cidr_block
+}
