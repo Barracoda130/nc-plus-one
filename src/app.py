@@ -29,6 +29,9 @@ app.add_exception_handler(RequestValidationError, request_validation_exception_h
 app.add_exception_handler(DatabaseError, database_exception_handler)
 app.add_exception_handler(asyncpg.exceptions.PostgresError, database_exception_handler)
 
+@app.get("/health", tags=["Health Check"])
+def health_check():
+    return {"status": "ok"}
 
 def run():
     print("Lets run")
