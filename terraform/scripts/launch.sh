@@ -62,17 +62,6 @@ JWT_SECRET="$(aws secretsmanager get-secret-value \
   --output text | jq -r '."JWT_SECRET"')"
 
 export RDSHOST=${DB_HOST}
-if [ "$(psql "host=$RDSHOST port=5432 dbname=$DB_NAME user=$DB_USERNAME" \
-  -tAc "SELECT NOT EXISTS (
-    SELECT 1
-    FROM information_schema.tables
-    WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
-  );")" = "t" ]; then
-  echo "No application tables found; seeding the database"
-  python3 
-else
-  echo "Application tables already exist; skipping database seed"
-fi
 
 echo "Creating the Python virtual environment"
 python3 -m venv venv
@@ -91,6 +80,18 @@ JWT_SECRET=$JWT_SECRET
 
 echo "Installing application requirements"
 sudo make requirements
+
+if [ "$(psql "host=$RDSHOST port=5432 dbname=$DB_NAME user=$DB_USERNAME" \
+  -tAc "SELECT NOT EXISTS (
+    SELECT 1
+    FROM information_schema.tables
+    WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
+  );")" = "t" ]; then
+  echo "No application tables found; seeding the database"
+  sudo make seed-db 
+else
+  echo "Application tables already exist; skipping database seed"
+fi
 
 echo "Running application development setup"
 sudo make dev-setup
