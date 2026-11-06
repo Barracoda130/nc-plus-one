@@ -31,6 +31,7 @@ app.add_exception_handler(asyncpg.exceptions.PostgresError, database_exception_h
 
 
 def run():
+    print("Lets run")
     host = os.environ.get("FAST_API_HOST", "172.0.0.1")
     uvicorn.run("src.app:app",
                 host=host,
