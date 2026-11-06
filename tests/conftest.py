@@ -16,6 +16,7 @@ def pytest_configure():
     Configure pytest to use the 'nc_plus_one_test' database for testing.
     """
     os.environ["DATABASE_NAME"] = "nc_plus_one_test"
+    os.environ["JWT_SECRET"] = "test_secret"
 
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def setup_database():
