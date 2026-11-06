@@ -89,7 +89,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_http_inbound" {
   to_port           = 80
 }
 
-resource "aws_vpc_security_group_egress_rule" "allow_http_from_lb" {
+resource "aws_vpc_security_group_ingress_rule" "allow_http_from_lb" {
   security_group_id = aws_security_group.allow_http_from_lb.id
   cidr_ipv4         = module.vpc.cidr_block
   ip_protocol       = "tcp"
