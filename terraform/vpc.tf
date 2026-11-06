@@ -1,6 +1,6 @@
 
 module "vpc" {
-  source = "/home/lcomp/terraform_modules/vpc"
+  source = "./vpc"
 
   name       = "main"
   cidr_block = "10.0.0.0/16"
