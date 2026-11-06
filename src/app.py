@@ -5,12 +5,16 @@ from fastapi import APIRouter, FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 import uvicorn
+from dotenv import load_dotenv
+import os
 
 from src.db.exceptions import DatabaseError
 from src.endpoints.events import router as events_router
 from src.endpoints.auth import router as auth_router
 from src.exception_handler import http_exception_handler, request_validation_exception_handler, database_exception_handler
 from src.exceptions import NCPlusOneHTTPException
+
+load_dotenv(".env")
 
 app = FastAPI(title="NC+1 API")
 
@@ -27,4 +31,7 @@ app.add_exception_handler(asyncpg.exceptions.PostgresError, database_exception_h
 
 
 def run():
-    uvicorn.run("src.app:app", reload=True)
+    host = os.environ.get("FAST_API_HOST", "172.0.0.1")
+    uvicorn.run("src.app:app",
+                host=host,
+                reload=True)
