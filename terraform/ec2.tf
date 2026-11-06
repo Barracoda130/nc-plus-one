@@ -21,7 +21,8 @@ resource "aws_instance" "public-servers" {
   key_name                    = "neptune-laptop"
   vpc_security_group_ids = [aws_security_group.allow_all_outbound.id,
     aws_security_group.allow_ssh.id,
-  aws_security_group.database_access.id]
+    aws_security_group.database_access.id,
+  aws_security_group.allow_http_from_lb.id]
 
   user_data = templatefile("./scripts/launch.sh",
     {
