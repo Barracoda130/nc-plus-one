@@ -16,13 +16,13 @@ resource "aws_instance" "public-servers" {
 
   ami                         = "ami-0bce970415466784a"
   instance_type               = "t2.micro"
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   subnet_id                   = module.vpc.public_subnets[count.index].id
   key_name                    = "neptune-laptop"
   vpc_security_group_ids = [aws_security_group.allow_all_outbound.id,
     aws_security_group.allow_ssh.id,
     aws_security_group.database_access.id,
-  aws_security_group.allow_http_from_lb.id]
+  aws_security_group.allow_http_inbound.id]
 
   user_data = templatefile("./scripts/launch.sh",
     {
