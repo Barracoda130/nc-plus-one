@@ -1,4 +1,14 @@
 
+data "github_branch" "main" {
+  repository = "nc-plus-one"
+  branch     = "main"
+}
+
+locals {
+  app_commit_sha = data.github_branch.main.sha
+}
+
+
 
 resource "aws_instance" "public-servers" {
   count = length(module.vpc.public_subnets)
@@ -15,7 +25,8 @@ resource "aws_instance" "public-servers" {
 
   user_data = templatefile("./scripts/launch.sh",
     {
-      DB_HOST = aws_db_instance.default.address
+      DB_HOST        = aws_db_instance.default.address
+      APP_COMMIT_SHA = local.app_commit_sha
   })
   user_data_replace_on_change = true
 

@@ -41,6 +41,8 @@ export GIT_TERMINAL_PROMPT=0
 echo "Cloning application repository"
 git clone https://github.com/Barracoda130/nc-plus-one.git
 
+echo "SHA: ${APP_COMMIT_SHA}"
+
 echo "Changing to application directory"
 cd nc-plus-one
 
@@ -67,8 +69,8 @@ echo "Creating the Python virtual environment"
 python3 -m venv venv
 
 echo "Creating the application environment file"
-echo "
 
+echo "
 LOG_LEVEL=debug
 DATABASE_HOST=$RDSHOST
 DATABASE_NAME=$DB_NAME

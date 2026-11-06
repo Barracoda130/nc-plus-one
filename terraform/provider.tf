@@ -7,6 +7,10 @@ terraform {
     http = {
       source = "hashicorp/http"
     }
+    github = {
+      source  = "integrations/github"
+      version = "~> 6.0"
+    }
   }
   backend "s3" {
     bucket = "terraform-states-265779924106-eu-west-2-an"
@@ -24,6 +28,10 @@ provider "aws" {
       repo    = "nc-plus-one"
     }
   }
+}
+
+provider "github" {
+  token = var.github_token
 }
 
 provider "http" {}
