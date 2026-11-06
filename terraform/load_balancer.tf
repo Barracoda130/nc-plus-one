@@ -3,6 +3,10 @@ resource "aws_lb_target_group" "public-servers" {
   port     = 80
   protocol = "HTTP"
   vpc_id   = module.vpc.vpc_id
+
+  health_check {
+    path = "/health"
+  }
 }
 
 resource "aws_lb_target_group_attachment" "public-servers" {
