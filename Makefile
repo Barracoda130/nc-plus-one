@@ -53,7 +53,7 @@ coverage:
 
 # Setup test database
 create-test-db:
-	createdb test_db
+	sudo -u postgres createdb test_db
 
 # Seed database
 seed-db:
