@@ -52,7 +52,7 @@ coverage:
 	$(call execute_in_env, $(PIP) install pytest-cov)
 
 # Setup test database
-setup-test-db:
+create-test-db:
 	createdb test_db
 
 # Seed database
@@ -60,7 +60,7 @@ seed-db:
 	$(call execute_in_env, $(PYTHON_INTERPRETER) main.py --seed)
 
 ## Set up dev requirements (bandit, black & coverage)
-dev-setup: bandit black coverage
+dev-setup: bandit black coverage create-test-db
 
 # Build / Run
 
