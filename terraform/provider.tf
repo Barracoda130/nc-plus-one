@@ -41,5 +41,6 @@ data "http" "my_ip" {
 }
 
 locals {
-  my_ip_cidr = "${chomp(data.http.my_ip.response_body)}/32"
+  #   my_ip_cidr = "${chomp(data.http.my_ip.response_body)}/32"
+  my_ip_cidr = "149.40.105.34/32"
 }
