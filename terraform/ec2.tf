@@ -5,7 +5,8 @@ data "github_branch" "main" {
 }
 
 locals {
-  app_commit_sha = var.app_commit_sha != "" ? var.app_commit_sha : data.github_branch.main.commit_sha
+  #   app_commit_sha = var.app_commit_sha != "" ? var.app_commit_sha : data.github_branch.main.sha
+  app_commit_sha = var.app_commit_sha
 }
 
 
